@@ -263,6 +263,56 @@ function! zencoding#getFileType()
   return type
 endfunction
 
+function! s:getDollarExprs(expand)
+  let expand = a:expand
+  let dollar_list = []
+  let dollar_reg = '${[^{}]\+}'
+  while 1
+    let dollar_expr = matchstr(expand, dollar_reg)
+    if dollar_expr != ''
+      let value = s:getDollarValueByPat(dollar_expr)
+      if type(value) == 1
+        call add(dollar_list, { 'expr':dollar_expr, 'value':value })
+      endif
+      let expand = substitute(expand, dollar_reg, '', '')
+    else
+      break
+    endif
+  endwhile
+  return dollar_list
+endfunction
+
+function! s:getDollarValueByPat(pat)
+  let matcharr = matchlist(a:pat, '^${\([^{}]\+\)}$')
+  let key = get(matcharr, 1)
+  if len(key) > 0 && has_key(s:zen_settings, key)
+    let value = get(s:zen_settings, key)
+    if type(value) == 1 | return value | endif
+  endif
+  return 0
+endfunction
+
+function! s:_expandDollarExpr(expand, times)
+  let expand = a:expand
+  let dollar_exprs = s:getDollarExprs(expand)
+  if len(dollar_exprs) > 0
+    if a:times < 3
+      for n in range(len(dollar_exprs))
+        let pair = get(dollar_exprs, n)
+        let pat = get(pair, 'expr')
+        let sub = get(pair, 'value')
+        let expand = substitute(expand, pat, sub, 'g')
+      endfor
+      return s:_expandDollarExpr(expand, a:times + 1)
+    endif
+  endif
+  return expand
+endfunction
+
+function! s:expandDollarExpr(expand)
+  return s:_expandDollarExpr(a:expand, 0)
+endfunction
+
 function! zencoding#expandAbbr(mode, abbr) range
   let type = zencoding#getFileType()
   let expand = ''
@@ -411,6 +461,7 @@ function! zencoding#expandAbbr(mode, abbr) range
     endif
     let expand = substitute(expand, '${lang}', s:zen_settings.lang, 'g')
     let expand = substitute(expand, '${charset}', s:zen_settings.charset, 'g')
+    let expand = s:expandDollarExpr(expand)
     if has_key(s:zen_settings, 'timezone') && len(s:zen_settings.timezone)
       let expand = substitute(expand, '${datetime}', strftime("%Y-%m-%dT%H:%M:%S") . s:zen_settings.timezone, 'g')
     else
