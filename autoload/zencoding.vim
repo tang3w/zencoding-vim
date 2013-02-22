@@ -459,8 +459,6 @@ function! zencoding#expandAbbr(mode, abbr) range
         let expand .= '${cursor}'
       endif
     endif
-    let expand = substitute(expand, '${lang}', s:zen_settings.lang, 'g')
-    let expand = substitute(expand, '${charset}', s:zen_settings.charset, 'g')
     let expand = s:expandDollarExpr(expand)
     if has_key(s:zen_settings, 'timezone') && len(s:zen_settings.timezone)
       let expand = substitute(expand, '${datetime}', strftime("%Y-%m-%dT%H:%M:%S") . s:zen_settings.timezone, 'g')
