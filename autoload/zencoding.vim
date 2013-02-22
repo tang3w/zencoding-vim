@@ -283,13 +283,18 @@ function! s:getDollarExprs(expand)
 endfunction
 
 function! s:getDollarValueByPat(pat)
-  let matcharr = matchlist(a:pat, '^${\([^{}]\+\)}$')
-  let key = get(matcharr, 1)
-  if len(key) > 0 && has_key(s:zen_settings, key)
+  let ret = 0
+  let key = get(matchlist(a:pat, '^${\([^{}]\+\)}$'), 1)
+  let ftsetting = get(s:zen_settings, zencoding#getFileType())
+  if type(ftsetting) == 4 && has_key(ftsetting, key)
+    let value = get(ftsetting, key)
+    if type(value) == 1 | let ret = value | endif
+  endif
+  if type(ret) != 1 && has_key(s:zen_settings, key)
     let value = get(s:zen_settings, key)
     if type(value) == 1 | return value | endif
   endif
-  return 0
+  return ret
 endfunction
 
 function! s:_expandDollarExpr(expand, times)
