@@ -271,7 +271,7 @@ function! zencoding#getDollarExprs(expand)
     let dollar_expr = matchstr(expand, dollar_reg)
     if dollar_expr != ''
       let value = zencoding#getDollarValueByPat(dollar_expr)
-      if type(value) == 1
+      if type(value) == type('')
         call add(dollar_list, { 'expr':dollar_expr, 'value':value })
       endif
       let expand = substitute(expand, dollar_reg, '', '')
@@ -288,11 +288,11 @@ function! zencoding#getDollarValueByPat(pat)
   let ftsetting = get(s:zen_settings, zencoding#getFileType())
   if type(ftsetting) == 4 && has_key(ftsetting, key)
     let value = get(ftsetting, key)
-    if type(value) == 1 | let ret = value | endif
+    if type(value) == type('') | let ret = value | endif
   endif
-  if type(ret) != 1 && has_key(s:zen_settings, key)
+  if type(ret) != type('') && has_key(s:zen_settings, key)
     let value = get(s:zen_settings, key)
-    if type(value) == 1 | return value | endif
+    if type(value) == type('') | return value | endif
   endif
   return ret
 endfunction
