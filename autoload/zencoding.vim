@@ -81,7 +81,7 @@ function! zencoding#parseIntoTree(abbr, type)
   return zencoding#lang#{rtype}#parseIntoTree(abbr, type)
 endfunction
 
-function! s:mergeConfig(lhs, rhs)
+function! zencoding#mergeConfig(lhs, rhs)
   if type(a:lhs) == 3 && type(a:rhs) == 3
     let a:lhs += a:rhs
     if len(a:lhs)
@@ -99,7 +99,7 @@ function! s:mergeConfig(lhs, rhs)
         let a:lhs[key] += a:rhs[key]
       elseif type(a:rhs[key]) == 4
         if has_key(a:lhs, key)
-          call s:mergeConfig(a:lhs[key], a:rhs[key])
+          call zencoding#mergeConfig(a:lhs[key], a:rhs[key])
         else
           let a:lhs[key] = a:rhs[key]
         endif
@@ -219,7 +219,7 @@ function! zencoding#getResource(type, name, default)
     endif
     for ext in extends
       if has_key(s:zen_settings, ext) && has_key(s:zen_settings[ext], a:name)
-        call s:mergeConfig(ret, s:zen_settings[ext][a:name])
+        call zencoding#mergeConfig(ret, s:zen_settings[ext][a:name])
       endif
     endfor
   endif
@@ -227,7 +227,7 @@ function! zencoding#getResource(type, name, default)
   if has_key(s:zen_settings[a:type], a:name)
     let v = s:zen_settings[a:type][a:name]
     if type(ret) == 3 || type(ret) == 4
-      call s:mergeConfig(ret, s:zen_settings[a:type][a:name])
+      call zencoding#mergeConfig(ret, s:zen_settings[a:type][a:name])
     else
       let ret = s:zen_settings[a:type][a:name]
     endif
@@ -263,14 +263,14 @@ function! zencoding#getFileType()
   return type
 endfunction
 
-function! s:getDollarExprs(expand)
+function! zencoding#getDollarExprs(expand)
   let expand = a:expand
   let dollar_list = []
   let dollar_reg = '${[^{}]\+}'
   while 1
     let dollar_expr = matchstr(expand, dollar_reg)
     if dollar_expr != ''
-      let value = s:getDollarValueByPat(dollar_expr)
+      let value = zencoding#getDollarValueByPat(dollar_expr)
       if type(value) == 1
         call add(dollar_list, { 'expr':dollar_expr, 'value':value })
       endif
@@ -282,7 +282,7 @@ function! s:getDollarExprs(expand)
   return dollar_list
 endfunction
 
-function! s:getDollarValueByPat(pat)
+function! zencoding#getDollarValueByPat(pat)
   let ret = 0
   let key = get(matchlist(a:pat, '^${\([^{}]\+\)}$'), 1)
   let ftsetting = get(s:zen_settings, zencoding#getFileType())
@@ -297,9 +297,9 @@ function! s:getDollarValueByPat(pat)
   return ret
 endfunction
 
-function! s:_expandDollarExpr(expand, times)
+function! zencoding#reExpandDollarExpr(expand, times)
   let expand = a:expand
-  let dollar_exprs = s:getDollarExprs(expand)
+  let dollar_exprs = zencoding#getDollarExprs(expand)
   if len(dollar_exprs) > 0
     if a:times < 3
       for n in range(len(dollar_exprs))
@@ -308,14 +308,14 @@ function! s:_expandDollarExpr(expand, times)
         let sub = get(pair, 'value')
         let expand = substitute(expand, pat, sub, 'g')
       endfor
-      return s:_expandDollarExpr(expand, a:times + 1)
+      return zencoding#reExpandDollarExpr(expand, a:times + 1)
     endif
   endif
   return expand
 endfunction
 
-function! s:expandDollarExpr(expand)
-  return s:_expandDollarExpr(a:expand, 0)
+function! zencoding#expandDollarExpr(expand)
+  return zencoding#reExpandDollarExpr(a:expand, 0)
 endfunction
 
 function! zencoding#expandAbbr(mode, abbr) range
@@ -464,7 +464,7 @@ function! zencoding#expandAbbr(mode, abbr) range
         let expand .= '${cursor}'
       endif
     endif
-    let expand = s:expandDollarExpr(expand)
+    let expand = zencoding#expandDollarExpr(expand)
     if has_key(s:zen_settings, 'timezone') && len(s:zen_settings.timezone)
       let expand = substitute(expand, '${datetime}', strftime("%Y-%m-%dT%H:%M:%S") . s:zen_settings.timezone, 'g')
     else
@@ -1487,7 +1487,7 @@ let s:zen_settings = {
 \}
 
 if exists('g:user_zen_settings')
-  call s:mergeConfig(s:zen_settings, g:user_zen_settings)
+  call zencoding#mergeConfig(s:zen_settings, g:user_zen_settings)
 endif
 
 let &cpo = s:save_cpo
