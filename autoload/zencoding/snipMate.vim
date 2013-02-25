@@ -65,7 +65,7 @@ fun! zencoding#snipMate#expandSnip(snip, col)
   if snippet == '' | return '' | endif
 
   let line = getline(lnum)
-  " let afterCursor = strpart(line, col - 1)
+  let afterCursor = strpart(line, col - 1)
   " " Keep text after the cursor
   " if afterCursor != "\t" && afterCursor != ' '
   "   let line = strpart(line, 0, col - 1)
