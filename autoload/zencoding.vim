@@ -143,7 +143,7 @@ function! zencoding#toString(...)
   let itemno = 0
   let str = ''
   let use_pipe_for_cursor = zencoding#getResource(type, 'use_pipe_for_cursor', 1)
-  let rtype = zencoding#lang#exists(type) ? type : 'html'
+  let rtype = zencoding#lang#exists(type) ? type : 'default'
   while itemno < current.multiplier
     if len(current.name)
       if group_itemno != 0
@@ -486,11 +486,7 @@ function! zencoding#expandAbbr(mode, abbr) range
       let lhs = matchstr(line, '.*\%<'.col.'c.')
       let rhs = matchstr(line, '\%>'.(col-1).'c.*')
       let expand = lhs.expand.rhs
-      let lines = split(expand, '\n')
-      call setline(line('.'), lines[0])
-      if len(lines) > 1
-        call append(line('.'), lines[1:])
-      endif
+      let cmd = zencoding#snipMate#expandSnip(expand, 1)
     else
       let expand = substitute(expand, '\${cursor}', '$cursor$', '')
       let expand = substitute(expand, '\${cursor}', '', 'g')
@@ -501,16 +497,15 @@ function! zencoding#expandAbbr(mode, abbr) range
       endif
       let expand = substitute(expand, '\n\s*$', '', 'g')
       let expand = line[:-len(part)-1] . substitute(expand, "\n", "\n" . indent, 'g') . rest
-      let lines = split(expand, '\n')
       if a:mode == 2
         silent! exe "normal! gvc"
       endif
-      call setline(line('.'), lines[0])
-      if len(lines) > 1
-        call append(line('.'), lines[1:])
-      endif
+      let cmd = zencoding#snipMate#expandSnip(expand, 1)
     endif
   endif
+
+  let pos = getpos('.')
+
   if search('\$cursor\$', 'e')
     let oldselection = &selection
     let &selection = 'inclusive'
@@ -518,8 +513,20 @@ function! zencoding#expandAbbr(mode, abbr) range
     silent! exe "normal! v7h\"_s"
     let &selection = oldselection
   endif
+ 
+  if len(cmd) > 0
+    call setpos('.', pos)
+    silent! execute "normal! h".cmd
+  endif
+
   if g:zencoding_debug > 1
     call getchar()
+  endif
+endfunction
+
+function! zencoding#moveToNextStop()
+  if exists('g:snipPos')
+    silent! execute "normal! h".zencoding#snipMate#triggerSnippet()
   endif
 endfunction
 
