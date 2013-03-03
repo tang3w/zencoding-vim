@@ -49,7 +49,7 @@
 "   This configuration will be marged at loading plugin.
 "
 "     let g:user_zen_settings = {
-"     \  'indentation' : '  ',
+"     \  'indent' : '  ',
 "     \  'perl' : {
 "     \    'aliases' : {
 "     \      'req' : 'require '
@@ -92,7 +92,7 @@ endif
 
 function! s:install_plugin_i()
   for item in [
-  \ {'mode': 'i', 'var': 'user_zen_expandabbr_key', 'key': ',', 'plug': 'ZenCodingExpandAbbr', 'func': '<c-g>u<esc>:call zencoding#expandAbbr(0,"")<cr>'},
+  \ {'mode': 'i', 'var': 'user_zen_expandabbr_key', 'key': ',', 'plug': 'ZenCodingExpandAbbr', 'func': '<c-g>u<esc>:call zencoding#expandAbbr(0,"")<cr>a'},
   \ {'mode': 'i', 'var': 'user_zen_nexttabstop_key', 'key': 't', 'plug': 'ZenCodingNextTabStop', 'func': '<c-g>u<esc>:call zencoding#moveToNextStop()<cr>'},
   \ {'mode': 'i', 'var': 'user_zen_expandword_key', 'key': ';', 'plug': 'ZenCodingExpandWord', 'func': '<c-g>u<esc>:call zencoding#expandAbbr(1,"")<cr>a'},
   \ {'mode': 'i', 'var': 'user_zen_balancetaginward_key', 'key': 'd', 'plug': 'ZenCodingBalanceTagInwardInsert', 'func': '<esc>:call zencoding#balanceTag(1)<cr>'},

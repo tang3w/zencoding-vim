@@ -64,7 +64,7 @@ detailed_description: |
   This configuration will be marged at loading plugin. 
   
     let g:user_zen_settings = {
-    \  'indentation' : '  ',
+    \  'indent' : '  ',
     \  'perl' : {
     \    'aliases' : {
     \      'req' : 'require '

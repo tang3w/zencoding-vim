@@ -142,7 +142,7 @@ function! s:do_tests(...)
   try
     if exists('g:user_zen_settings')
       let s:old_user_zen_settings = g:user_zen_settings
-      let g:user_zen_settings = { 'indentation': "\t" }
+      let g:user_zen_settings = { 'indent': "\t" }
     endif
     let oldmore = &more
     call s:reload(fnamemodify(s:sfile, ':h'))

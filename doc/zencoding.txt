@@ -330,14 +330,14 @@ CUSTOMIZE                                                  *zencoding-customize*
 >
   let g:user_zen_settings = {
   \  'html' : {
-  \    'indentation' : ' '
+  \    'indent' : ' '
   \  },
   \}
 <
   If you prefer to change global indent size then add this.
 >
   let g:user_zen_settings = {
-  \  'indentation' : ' '
+  \  'indent' : ' '
   \}
 <
 3. Define Tag's Behavior                        *zencoding-define-tags-behavior*
@@ -350,10 +350,10 @@ CUSTOMIZE                                                  *zencoding-customize*
   \  'lang' : 'ja',
   \  'html' : {
   \    'filters' : 'html',
-  \    'indentation' : ' '
+  \    'indent' : ' '
   \  },
   \  'perl' : {
-  \    'indentation' : '  ',
+  \    'indent' : '  ',
   \    'aliases' : {
   \      'req' : "require '|'"
   \    },
@@ -378,7 +378,7 @@ CUSTOMIZE                                                  *zencoding-customize*
   \    },
   \  },
   \ 'java' : {
-  \  'indentation' : '    ',
+  \  'indent' : '    ',
   \  'snippets' : {
   \   'main': "public static void main(String[] args) {\n\t|\n}",
   \   'println': "System.out.println(\"|\");",
