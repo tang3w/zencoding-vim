@@ -519,16 +519,15 @@ function! zencoding#expandAbbr(mode, abbr) range
     endif
   endif
 
-  if search('\$cursor\$', 'e')
+  if len(cmd) > 0
+    silent! execute 'normal! h'.cmd
+  elseif search('\$cursor\$', 'e')
     let oldselection = &selection
     let &selection = 'inclusive'
     silent! foldopen
-    silent! exe "normal! v7h\"_s"
+    silent! exe 'normal! v7h"_s'
+    call feedkeys('a', 'i')
     let &selection = oldselection
-  endif
-
-  if len(cmd) > 0
-    silent! execute "normal! h".cmd
   endif
 
   if g:zencoding_debug > 1
