@@ -150,6 +150,7 @@ function! zencoding#toString(...)
       else
         let inner = zencoding#lang#{rtype}#toString(s:zen_settings, current, type, inline, filters, itemno, indent)
       endif
+      let inner = zencoding#expandDollarExpr(inner)
       if current.multiplier > 1
         let inner = substitute(inner, '\$#', '$line'.(itemno+1).'$', 'g')
       endif
@@ -167,9 +168,11 @@ function! zencoding#toString(...)
         let tmp = substitute(tmp, '\${zenname}', current.name, 'g')
         let snippet_node = { 'name': '', 'attr': {}, 'child': [], 'snippet': '', 'multiplier': 0, 'parent': {}, 'value': '{'.tmp.'}', 'pos': 0, 'important': current.important }
         let str = zencoding#lang#{rtype}#toString(s:zen_settings, snippet_node, type, inline, filters, group_itemno, indent)
+        let str = zencoding#expandDollarExpr(str)
       else
+        let tmp = ''
         if len(current.name)
-          let str .= current.name
+          let tmp .= current.name
         endif
         if len(current.value)
           let text = current.value[1:-2]
@@ -178,8 +181,9 @@ function! zencoding#toString(...)
             let text = substitute(text, '\${nr}', "\n", 'g')
             let text = substitute(text, '\\\$', '$', 'g')
           endif
-          let str .= text
+          let tmp .= text
         endif
+        let str .= zencoding#expandDollarExpr(tmp)
       endif
       let inner = ''
       if len(current.child)
@@ -481,7 +485,6 @@ function! zencoding#expandAbbr(mode, abbr) range
     endif
     let expand = substitute(expand, '\$line\([0-9]\+\)\$', '\=submatch(1)', 'g')
   endif
-  let expand = zencoding#expandDollarExpr(expand)
   let expand = zencoding#expandCursorExpr(expand, a:mode)
   if len(expand)
     if has_key(s:zen_settings, 'timezone') && len(s:zen_settings.timezone)
